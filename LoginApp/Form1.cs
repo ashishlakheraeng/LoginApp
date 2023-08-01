@@ -8,7 +8,6 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using WebDriverManager;
 
 namespace LoginApp
 {
@@ -16,6 +15,7 @@ namespace LoginApp
     {
         const string pwdKey = "wmdLoginPass";
         private IWebDriver _driver;
+        private readonly string driverLocation = Environment.GetEnvironmentVariable("DriverPath");
 
         public Form1()
         {
@@ -125,36 +125,46 @@ namespace LoginApp
 
         public void OpenWebUrl(string url, string userName, string password)
         {
-            new DriverManager().SetUpDriver(
-    "https://chromedriver.storage.googleapis.com/2.25/chromedriver_win32.zip",
-    Path.Combine(Directory.GetCurrentDirectory(), "chromedriver.exe"),
-    "chromedriver.exe"
-);
-            _driver = new ChromeDriver();
-            _driver.Navigate().GoToUrl(url);
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10000);
+            try
+            {
 
-            IWebElement inputAccount = _driver.FindElement(By.Id("username"));
-            Thread.Sleep(2000);
-            inputAccount.Clear();
-            Thread.Sleep(2000);
-            inputAccount.SendKeys(userName);
-            Thread.Sleep(2000);
 
-            IWebElement inputPassword = _driver.FindElement(By.Id("password"));
+                //var service = ChromeDriverService.CreateDefaultService();
+                //service.DriverServicePath = driverLocation;
+                //_driver = new ChromeDriver(service);
+                _driver = new ChromeDriver();
+                _driver.Navigate().GoToUrl(url);
+                _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10000);
 
-            inputPassword.Clear();
-            Thread.Sleep(2000);
-            inputPassword.SendKeys(password);
-            Thread.Sleep(2000);
+                IWebElement inputAccount = _driver.FindElement(By.Id("username"));
+                Thread.Sleep(2000);
+                inputAccount.Clear();
+                Thread.Sleep(2000);
+                inputAccount.SendKeys(userName);
+                Thread.Sleep(2000);
 
-            //IWebElement submitButton = driver.FindElement(By.XPath("/html/body/div[2]/form/table/tbody/tr[4]/td[2]/input"));
-            IWebElement submitButton = _driver.FindElement(By.Id("submit"));
-            Thread.Sleep(2000);
-            submitButton.Click();
-            Thread.Sleep(2000);
+                IWebElement inputPassword = _driver.FindElement(By.Id("password"));
 
-            //driver.Quit();
+                inputPassword.Clear();
+                Thread.Sleep(2000);
+                inputPassword.SendKeys(password);
+                Thread.Sleep(2000);
+
+                //IWebElement submitButton = driver.FindElement(By.XPath("/html/body/div[2]/form/table/tbody/tr[4]/td[2]/input"));
+                IWebElement submitButton = _driver.FindElement(By.Id("submit"));
+                Thread.Sleep(2000);
+                submitButton.Click();
+                Thread.Sleep(2000);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                //_driver.Quit();
+            }
         }
     }
 }
