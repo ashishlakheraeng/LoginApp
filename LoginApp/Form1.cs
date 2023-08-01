@@ -8,12 +8,15 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using WebDriverManager;
 
 namespace LoginApp
 {
     public partial class Form1 : Form
     {
         const string pwdKey = "wmdLoginPass";
+        private IWebDriver _driver;
+
         public Form1()
         {
             InitializeComponent();
@@ -119,20 +122,26 @@ namespace LoginApp
         {
 
         }
+
         public void OpenWebUrl(string url, string userName, string password)
         {
-            IWebDriver driver = new ChromeDriver();
-            driver.Navigate().GoToUrl(url);
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10000);
+            new DriverManager().SetUpDriver(
+    "https://chromedriver.storage.googleapis.com/2.25/chromedriver_win32.zip",
+    Path.Combine(Directory.GetCurrentDirectory(), "chromedriver.exe"),
+    "chromedriver.exe"
+);
+            _driver = new ChromeDriver();
+            _driver.Navigate().GoToUrl(url);
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10000);
 
-            IWebElement inputAccount = driver.FindElement(By.Id("username"));
+            IWebElement inputAccount = _driver.FindElement(By.Id("username"));
             Thread.Sleep(2000);
             inputAccount.Clear();
             Thread.Sleep(2000);
             inputAccount.SendKeys(userName);
             Thread.Sleep(2000);
 
-            IWebElement inputPassword = driver.FindElement(By.Id("password"));
+            IWebElement inputPassword = _driver.FindElement(By.Id("password"));
 
             inputPassword.Clear();
             Thread.Sleep(2000);
@@ -140,7 +149,7 @@ namespace LoginApp
             Thread.Sleep(2000);
 
             //IWebElement submitButton = driver.FindElement(By.XPath("/html/body/div[2]/form/table/tbody/tr[4]/td[2]/input"));
-            IWebElement submitButton = driver.FindElement(By.Id("submit"));
+            IWebElement submitButton = _driver.FindElement(By.Id("submit"));
             Thread.Sleep(2000);
             submitButton.Click();
             Thread.Sleep(2000);
